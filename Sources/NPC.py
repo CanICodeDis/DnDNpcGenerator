@@ -1,9 +1,10 @@
-import numpy
 from math import floor
 from random import seed
 from random import randint
 from toolbox import read_random_object
-from toolbox import generate_six_randoms
+from toolbox import generate_scores
+from toolbox import pathbuilder
+import platform
 
 
 class NPC:
@@ -51,7 +52,7 @@ class NPC:
         if self.klasse is None:
             return
         else:
-            numbers = generate_six_randoms()
+            numbers = generate_scores()
             numbers.sort(reverse=True)
             if self.klasse == 'Mönch':
                 self.dex = numbers[0]
@@ -140,6 +141,7 @@ class NPC:
             self.calculate_modifiers()
 
     def print_info(self):
+        print('Name: ', self.name)
         print('Volk: ', self.volk)
         print('Geschlecht: ', self.geschlecht)
         print('Persöhnlichkeit: ', self.persohnlichkeit)
@@ -158,10 +160,17 @@ class NPC:
             self.geschlecht = 'weiblich'
         else:
             self.geschlecht = 'männlich'
-        self.persohnlichkeit = read_random_object('..\Listen\CharEigenschaften')
-        self.volk = read_random_object('..\Listen\Volk')
-        self.klasse = read_random_object('..\Listen\Klassen')
+        opsys = platform.system()
+        if opsys == 'Linux' or opsys == 'Darwin':
+            self.persohnlichkeit = read_random_object('../Listen/CharEigenschaften')
+            self.volk = read_random_object('../Listen/Volk')
+            self.klasse = read_random_object('../Listen/Klassen')
+        else:
+            self.persohnlichkeit = read_random_object('..\\Listen\\CharEigenschaften')
+            self.volk = read_random_object('..\\Listen\\Volk')
+            self.klasse = read_random_object('..\\Listen\\Klassen')
         self.score_distributor()
+        self.name = read_random_object(pathbuilder(self.geschlecht, self.volk))
         self.print_info()
 
 
