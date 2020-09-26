@@ -1,6 +1,7 @@
 import codecs
 from random import seed
 from random import randint
+import platform
 
 
 def file_len(fname):
@@ -24,13 +25,26 @@ def read_random_object(fname):
         randomnum = randint(0, i+1)
         file.seek(0)
         content = file.readlines()
-        content[randomnum-1] = content[randomnum-1].replace('\r\n', '')
+        content[randomnum-1] = content[randomnum-1].replace('\n', '')
     return content[randomnum-1]
 
 
-def generate_six_randoms():
+def generate_scores():
     seed()
     array = []
     for i in range(6):
-        array.append(randint(3, 18))
+        array.append(randint(1, 6) + randint(1, 6) + randint(1, 6))
     return array
+
+
+def pathbuilder(gesch, volk):
+    os = platform.system()
+    if os == 'Linux' or os == 'Darwin':
+        path = '../Listen/Namen/'
+        path = path + str(gesch) + '/' + str(volk)
+        # print(path)
+    else:
+        path = '..\\Listen\\Namen\\'
+        path = path + str(gesch) + '\\' + str(volk)
+        # print(path)
+    return path
