@@ -48,6 +48,21 @@ class NPC:
         self.wismod = floor((self.wis - 10.0) / 2.0)
         self.chamod = floor((self.cha - 10.0) / 2.0)
 
+    def getname(self):
+        return self.name
+
+    def set_name(self, name):
+        self.name = name
+
+    def setstufe(self, stufe):
+        self.stufe = int(stufe)
+
+    def getstufe(self):
+        return int(self.stufe)
+
+    def get_portrait(self):
+        return self.portrait
+
     def score_distributor(self):
         if self.klasse is None:
             return
@@ -171,7 +186,7 @@ class NPC:
             self.klasse = read_random_object('..\\Listen\\Klassen')
         self.score_distributor()
         self.name = read_random_object(pathbuilder(self.geschlecht, self.volk))
-        self.print_info()
 
 
 x = NPC()
+x.print_info()
