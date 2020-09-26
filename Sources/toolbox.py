@@ -25,7 +25,11 @@ def read_random_object(fname):
         randomnum = randint(0, i+1)
         file.seek(0)
         content = file.readlines()
-        content[randomnum-1] = content[randomnum-1].replace('\n', '')
+        os = platform.system()
+        if os == 'Linux' or os == 'Darwin':
+            content[randomnum-1] = content[randomnum-1].replace('\n', '')
+        else:
+            content[randomnum - 1] = content[randomnum - 1].replace('\r\n', '')
     return content[randomnum-1]
 
 
