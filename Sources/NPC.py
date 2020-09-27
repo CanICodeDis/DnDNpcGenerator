@@ -169,8 +169,13 @@ class NPC:
                 self.str = numbers[4]
                 self.int = numbers[5]
             elif self.klasse == 'Krieger':
-                self.str = numbers[0]
-                self.dex = numbers[1]
+                ismelee = randint(0, 1)
+                if ismelee == 1:
+                    self.str = numbers[0]
+                    self.dex = numbers[1]
+                else:
+                    self.dex = numbers[0]
+                    self.str = numbers[1]
                 self.con = numbers[2]
                 self.wis = numbers[3]
                 self.cha = numbers[4]
