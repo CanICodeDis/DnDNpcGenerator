@@ -1,4 +1,4 @@
-from math import floor
+from math import floor, ceil
 from random import seed
 from random import randint
 from toolbox import read_random_object
@@ -31,11 +31,11 @@ class NPC:
     chamod = 0
 
     hp = 0
-    temphp = 0
     ac = 0
     ini = 0
 
     stufe = 1
+    proficency = 0
 
     res = None
     vul = None
@@ -48,14 +48,57 @@ class NPC:
         self.wismod = floor((self.wis - 10.0) / 2.0)
         self.chamod = floor((self.cha - 10.0) / 2.0)
 
-    def getname(self):
+    def get_strmod(self):
+        return self.strmod
+
+    def get_dexmod(self):
+        return self.dexmod
+
+    def get_conmod(self):
+        return self.conmod
+
+    def get_intmod(self):
+        return self.intmod
+
+    def get_wismod(self):
+        return self.wismod
+
+    def get_chamod(self):
+        return self.chamod
+
+    def set_str(self, attr):
+        self.str = int(attr)
+        self.calculate_modifiers()
+
+    def set_dex(self, attr):
+        self.dex = int(attr)
+        self.calculate_modifiers()
+
+    def set_con(self, attr):
+        self.con = int(attr)
+        self.calculate_modifiers()
+
+    def set_int(self, attr):
+        self.int = int(attr)
+        self.calculate_modifiers()
+
+    def set_wis(self, attr):
+        self.wis = int(attr)
+        self.calculate_modifiers()
+
+    def set_cha(self, attr):
+        self.cha = int(attr)
+        self.calculate_modifiers()
+
+    def get_name(self):
         return self.name
 
     def set_name(self, name):
-        self.name = name
+        self.name = str(name)
 
-    def setstufe(self, stufe):
+    def set_stufe(self, stufe):
         self.stufe = int(stufe)
+        self.proficency = int(ceil(1.0 + 0.25 * self.stufe))
 
     def getstufe(self):
         return int(self.stufe)
@@ -153,13 +196,26 @@ class NPC:
                 self.dex = numbers[3]
                 self.cha = numbers[4]
                 self.int = numbers[5]
+            elif self.klasse == 'Zivilist':
+                self.wis = 8
+                self.con = 9
+                self.str = 10
+                self.dex = 11
+                self.cha = 10
+                self.int = 10
             self.calculate_modifiers()
 
     def print_info(self):
-        print('Name: ', self.name)
-        print('Volk: ', self.volk)
-        print('Geschlecht: ', self.geschlecht)
-        print('Persöhnlichkeit: ', self.persohnlichkeit)
+        if self.name is not None:
+            print('Name: ', self.name)
+        if self.volk is not None:
+            print('Volk: ', self.volk)
+        if self.geschlecht is not None:
+            print('Geschlecht: ', self.geschlecht)
+        if self.persohnlichkeit is not None:
+            print('Persöhnlichkeit: ', self.persohnlichkeit)
+        if self.geburtstag is not None:
+            print('Geburtstag: ', self.geburtstag)
         print('Klasse: ', self.klasse)
         print('Str: {} ({})'.format(str(self.str), str(self.strmod)))
         print('Dex: {} ({})'.format(str(self.dex), str(self.dexmod)))
@@ -167,6 +223,8 @@ class NPC:
         print('Int: {} ({})'.format(str(self.int), str(self.intmod)))
         print('Wis: {} ({})'.format(str(self.wis), str(self.wismod)))
         print('Cha: {} ({})'.format(str(self.cha), str(self.chamod)))
+        print('Stufe: {}'.format(str(self.stufe)))
+        print('Proficency Bonus: {}'.format(str(self.proficency)))
 
     def __init__(self):
         seed(None)
@@ -186,7 +244,9 @@ class NPC:
             self.klasse = read_random_object('..\\Listen\\Klassen')
         self.score_distributor()
         self.name = read_random_object(pathbuilder(self.geschlecht, self.volk))
+        self.proficency = int(ceil(1.0 + 0.25 * self.stufe))
 
 
 x = NPC()
+x.set_stufe(15)
 x.print_info()
