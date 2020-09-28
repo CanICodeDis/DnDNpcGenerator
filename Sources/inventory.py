@@ -18,6 +18,7 @@ class inventar:
             if item.get_name() == aname:
                 item.set_count(item.get_count()+anzahl)
                 self.gesamtzahl += anzahl
+                self.gesamtgewicht += anzahl * item.get_gewicht()
                 alreadyexists = 1
                 break
 
@@ -25,7 +26,7 @@ class inventar:
             self.Gegenstaende.append(Item(aname, anzahl, wert, weight, description))
             self.gesamtzahl += anzahl
             if weight is not None:
-                self.gesamtgewicht += weight
+                self.gesamtgewicht += anzahl * weight
 
     def entfernen(self, aname, anzahl):
         for item in self.Gegenstaende:
@@ -47,13 +48,14 @@ class inventar:
     def printinventory(self):
         for item in self.Gegenstaende:
             item.print_item()
-        print('Gesamtgewicht: ', str(self.gesamtgewicht))
+        print('Gesamtgewicht: {:.1f}'.format(self.gesamtgewicht))
         print('Anzahl aller Gegenstände: ', str(self.gesamtzahl))
 
 
 Inv = inventar()
-Inv.hinzufuegen('Buch', 3, '4 SP', description='Ein leeres Buch')
+Inv.hinzufuegen('Buch', 3, '4 SP', weight=1.7, description='Ein leeres Buch')
 Inv.hinzufuegen('Buch', 3, '4 SP', description='Ein leeres Buch')
 Inv.hinzufuegen('Zauberstab', 1, '2 GP', weight=5.2, description='Ein krummer Zauberstab, riecht nach Obst')
-Inv.entfernen('Buch', 1)
+Inv.hinzufuegen('Eisenkugel', 247, '29CP', weight=0.02, description='Ein Haufen Eisenkugeln in einem Sack. Nützlich, um Dinge ins Rollen zu bringen!')
+Inv.entfernen('Buch', 3)
 Inv.printinventory()
