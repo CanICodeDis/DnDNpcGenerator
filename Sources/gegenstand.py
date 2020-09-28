@@ -3,7 +3,7 @@
 class Item:
 
     name = None
-    weight = 0
+    weight = 0.0
     count = 0
     description = None
     wert = None
@@ -15,7 +15,7 @@ class Item:
         self.wert = 'Kein Wert festgelegt.'
         self.description = 'Keine Beschreibung hinterlegt.'
 
-    def __init__(self, name, count, wert = None, weight = None, despript = None):
+    def __init__(self, name, count, wert=None, weight=None, despript=None):
         self.name = str(name)
         self.count = int(count)
         if wert is not None:
@@ -43,6 +43,9 @@ class Item:
     def set_beschreibung(self, sdesc):
         self.description = str(sdesc)
 
+    def set_count(self, icount):
+        self.count = icount
+
     def get_name(self):
         return str(self.name)
 
@@ -54,3 +57,13 @@ class Item:
 
     def get_description(self):
         return str(self.description)
+
+    def get_count(self):
+        return int(self.count)
+
+    def print_item(self):
+        print('Name: ', self.name)
+        print('Anzahl: ', self.count)
+        print('Gewicht pro Einheit: ', str(self.get_gewicht()))
+        print('Wert: ', str(self.get_wert()))
+        print('Beschreibung:', str(self.get_description()))
