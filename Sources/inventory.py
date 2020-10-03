@@ -52,10 +52,10 @@ class inventar:
         print('Anzahl aller Gegenstände: ', str(self.gesamtzahl))
 
 
-Inv = inventar()
-Inv.hinzufuegen('Buch', 3, '4 SP', weight=1.7, description='Ein leeres Buch')
-Inv.hinzufuegen('Buch', 3, '4 SP', description='Ein leeres Buch')
-Inv.hinzufuegen('Zauberstab', 1, '2 GP', weight=5.2, description='Ein krummer Zauberstab, riecht nach Obst')
-Inv.hinzufuegen('Eisenkugel', 247, '29CP', weight=0.02, description='Ein Haufen Eisenkugeln in einem Sack. Nützlich, um Dinge ins Rollen zu bringen!')
-Inv.entfernen('Buch', 3)
-Inv.printinventory()
+# Inv = inventar()
+# Inv.hinzufuegen('Buch', 3, '4 SP', weight=1.7, description='Ein leeres Buch')
+# Inv.hinzufuegen('Buch', 3, '4 SP', description='Ein leeres Buch')
+# Inv.hinzufuegen('Zauberstab', 1, '2 GP', weight=5.2, description='Ein krummer Zauberstab, riecht nach Obst')
+# Inv.hinzufuegen('Eisenkugel', 247, '29CP', weight=0.02, description='Ein Haufen Eisenkugeln in einem Sack. Nützlich, um Dinge ins Rollen zu bringen!')
+# Inv.entfernen('Buch', 3)
+# Inv.printinventory()

@@ -5,6 +5,10 @@ from toolbox import read_random_object
 from toolbox import generate_scores
 from toolbox import pathbuilder
 import platform
+import png
+import os
+from pathlib import Path
+from inventory import inventar
 
 
 class NPC:
@@ -15,6 +19,8 @@ class NPC:
     volk = None
     persohnlichkeit = None
     portrait = None
+    savepath = None
+    inv = None
 
     str = 0
     dex = 0
@@ -105,6 +111,19 @@ class NPC:
 
     def get_portrait(self):
         return self.portrait
+
+    def directorybuilder(self):
+        ops = platform.system()
+        pa = str(Path.home())
+        if ops == 'Linux' or os == 'Darwin':
+            pa = pa + '/DnD/NPCs/'
+            pa = pa + str(self.volk) + '/' + str(self.klasse) + '/' + str(self.geschlecht) + '/\'' + str(self.name) + '\'/'
+        else:
+            pa = pa + '\\DnD\\NPCs\\'
+            pa = pa + str(self.volk) + '\\' + str(self.klasse) + '\\' + str(self.geschlecht) + '\\\'' + str(self.name) + '\\\''
+        if not os.path.exists(pa):
+            os.makedirs(pa)
+        self.savepath = pa
 
     def score_distributor(self):
         if self.klasse is None:
@@ -201,7 +220,7 @@ class NPC:
                 self.dex = numbers[3]
                 self.cha = numbers[4]
                 self.int = numbers[5]
-            elif self.klasse == 'Zivilist':
+            else:
                 self.wis = 8
                 self.con = 9
                 self.str = 10
@@ -230,6 +249,7 @@ class NPC:
         print('Cha: {} ({})'.format(str(self.cha), str(self.chamod)))
         print('Stufe: {}'.format(str(self.stufe)))
         print('Proficency Bonus: {}'.format(str(self.proficency)))
+        self.inv.printinventory()
 
     def __init__(self):
         seed(None)
@@ -242,16 +262,18 @@ class NPC:
         if opsys == 'Linux' or opsys == 'Darwin':
             self.persohnlichkeit = read_random_object('../Listen/CharEigenschaften')
             self.volk = read_random_object('../Listen/Volk')
-            self.klasse = read_random_object('../Listen/Klassen')
+            self.klasse = read_random_object('../Listen/Berufe')
         else:
             self.persohnlichkeit = read_random_object('..\\Listen\\CharEigenschaften')
             self.volk = read_random_object('..\\Listen\\Volk')
-            self.klasse = read_random_object('..\\Listen\\Klassen')
+            self.klasse = read_random_object('..\\Listen\\Berufe')
         self.score_distributor()
         self.name = read_random_object(pathbuilder(self.geschlecht, self.volk))
         self.proficency = int(ceil(1.0 + 0.25 * self.stufe))
+        self.inv = inventar()
 
 
 x = NPC()
 x.set_stufe(15)
 x.print_info()
+x.directorybuilder()
