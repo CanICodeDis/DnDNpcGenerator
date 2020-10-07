@@ -115,11 +115,11 @@ class NPC:
     def directorybuilder(self):
         ops = platform.system()
         pa = str(Path.home())
-        if ops == 'Linux' or os == 'Darwin':
-            pa = pa + '/DnD/NPCs/'
+        if ops == 'Linux' or ops == 'Darwin':
+            pa = pa + '/DnD/Kampagne/WegNachVorn/NPCs/'
             pa = pa + str(self.volk) + '/' + str(self.klasse) + '/' + str(self.geschlecht) + '/\'' + str(self.name) + '\'/'
         else:
-            pa = pa + '\\DnD\\NPCs\\'
+            pa = pa + '\\DnD\\Kampagne\\WegNachVorn\\NPCs\\'
             pa = pa + str(self.volk) + '\\' + str(self.klasse) + '\\' + str(self.geschlecht) + '\\\'' + str(self.name) + '\\\''
         if not os.path.exists(pa):
             os.makedirs(pa)
