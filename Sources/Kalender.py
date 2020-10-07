@@ -27,7 +27,7 @@ class fantasyTime:
         self.wochentag = 0
         self.monatsref = ('Gretstige', 'Mochtrath', 'Lyn', 'Ejnhar', 'Faarensted', 'Wassers Weg', \
                      'Kronmars Atem', 'Lindes Lohn', 'Labanthers Mantel')
-        self.monat = 0
+        self.monat = 11
         self.jahr = 500
         self.configpath = str(Path.home())
         opsys = platform.system()
@@ -58,6 +58,7 @@ class fantasyTime:
             self.incrementminutes(1)
             incsec -= 60
         if incsec >= timetonextmin:
+            self.incrementminutes(1)
             self.sekunde = incsec - timetonextmin
         else:
             self.sekunde += incsec
@@ -69,6 +70,7 @@ class fantasyTime:
             self.incrementhours(1)
             incmin -= 60
         if incmin >= timetonexthour:
+            self.incrementhours(1)
             self.minute = incmin - timetonexthour
         else:
             self.minute += incmin
@@ -80,6 +82,7 @@ class fantasyTime:
             self.incrementdays(1)
             inchours -= 24
         if inchours >= timetonextday:
+            self.incrementdays(1)
             self.stunde = inchours - timetonextday
         else:
             self.stunde += inchours
@@ -91,6 +94,7 @@ class fantasyTime:
             self.incrementmonths(1)
             incdays -= 31
         if incdays >= timetonextmonth:
+            self.incrementmonths(1)
             self.monatstag = incdays - timetonextmonth
         else:
             self.monatstag += incdays
@@ -102,10 +106,11 @@ class fantasyTime:
             self.incrementyears(1)
             incmonths -= 12
         if incmonths >= timetonextyear:
-            self.monatstag = incmonths - timetonextyear
+            self.incrementyears(1)
+            self.monat = incmonths - timetonextyear
         else:
-            self.monatstag += incmonths
-        print('Aktueller Monat: {}'.format(self.monat + 1))
+            self.monat += incmonths
+        print('Aktueller Monat: {}'.format(self.monat))
 
     def incrementyears(self, incyears):
         self.jahr += incyears
@@ -114,3 +119,4 @@ class fantasyTime:
 
 time = fantasyTime()
 time.incrementseconds(120)
+time.incrementmonths(4)
