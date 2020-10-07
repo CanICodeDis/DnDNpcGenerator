@@ -2,10 +2,10 @@ import platform
 from pathlib import Path
 import os
 import codecs
+import sys
 
 
 class fantasyTime:
-
     monatstag = None
     stunde = None
     minute = None
@@ -26,7 +26,8 @@ class fantasyTime:
         self.wochentagsref = ('Sonnentag', 'Felsentag', 'Windtag', 'Meerestag', 'Mondestag', 'Seelentag', 'Lebenstag')
         self.wochentag = 0
         self.monatsref = ('Gretstige', 'Mochtrath', 'Lyn', 'Ejnhar', 'Faarensted', 'Wassers Weg', \
-                     'Kronmars Atem', 'Lindes Lohn', 'Labanthers Mantel')
+                          'Kronmars Atem', 'Lindes Lohn', 'Sinvirs Flucht', 'Labanthers Mantel', 'Feuerschein', \
+                          'Frosthöh')
         self.monat = 11
         self.jahr = 500
         self.configpath = str(Path.home())
@@ -41,20 +42,15 @@ class fantasyTime:
             print('Datei geöffnet: ', self.configfile)
         print('Kalender initialisiert')
 
-    def savekalender(self):
-        with codecs.open(self.configpath + 'Kalenderconfig', 'w') as self.configfile:
-            self.configfile.write('Stunde: {}'.format(self.Stunde))
-            self.configfile.write('Minute: {}'.format(self.minute))
-            self.configfile.write('Sekunde: {}'.format(self.sekunde))
-            self.configfile.write('Wochentag: {}'.format(self.wochentag))
-            self.configfile.write('Datum: {}'.format(self.monatstag))
-            self.configfile.write('Monat: {}'.format(self.monat))
-            self.configfile.write('Jahr: {}'.format(self.jahr))
-            print('Kalender überschrieben')
-
     def incrementseconds(self, incsec):
         timetonextmin = 60 - self.sekunde
-        while incsec >= 60:
+        while incsec >= 86400:  # ein Tag in Sekunden
+            self.incrementdays(1)
+            incsec -= 86400
+        while incsec >= 3600:  # eine Stunde in Sekunden
+            self.incrementhours(1)
+            incsec -= 3600
+        while incsec >= 60:  # eine Minute in Sekunden
             self.incrementminutes(1)
             incsec -= 60
         if incsec >= timetonextmin:
@@ -62,11 +58,16 @@ class fantasyTime:
             self.sekunde = incsec - timetonextmin
         else:
             self.sekunde += incsec
-        print('Aktuelle Sekunden: {}'.format(self.sekunde))
 
     def incrementminutes(self, incmin):
         timetonexthour = 60 - self.minute
-        while incmin >= 60:
+        while incmin >= 44640:  # ein Monat in Minuten
+            self.incrementmonths(1)
+            incmin -= 44640
+        while incmin >= 1440:  # ein Tag in Minuten
+            self.incrementdays(1)
+            incmin -= 1440
+        while incmin >= 60:  # eine Stunde in Minuten
             self.incrementhours(1)
             incmin -= 60
         if incmin >= timetonexthour:
@@ -74,10 +75,15 @@ class fantasyTime:
             self.minute = incmin - timetonexthour
         else:
             self.minute += incmin
-        print('Aktuelle Minuten: {}'.format(self.minute))
 
     def incrementhours(self, inchours):
         timetonextday = 24 - self.stunde
+        while inchours >= 8928:  # ein Jahr in Stunden
+            self.incrementyears(1)
+            inchours -= 8928
+        while inchours >= 744:  # ein Monat in Stunden
+            self.incrementmonths(1)
+            inchours -= 744
         while inchours >= 24:
             self.incrementdays(1)
             inchours -= 24
@@ -86,37 +92,50 @@ class fantasyTime:
             self.stunde = inchours - timetonextday
         else:
             self.stunde += inchours
-        print('Aktuelle Stunde: {}'.format(self.stunde))
 
     def incrementdays(self, incdays):
         timetonextmonth = 31 - self.monatstag
+        while incdays >= 372:  # ein Jahr in Tagen
+            self.incrementyears(1)
+            incdays -= 372
         while incdays >= 31:
             self.incrementmonths(1)
             incdays -= 31
-        if incdays >= timetonextmonth:
+        if incdays > timetonextmonth:
             self.incrementmonths(1)
             self.monatstag = incdays - timetonextmonth
         else:
             self.monatstag += incdays
-        print('Aktueller Monatstag: {}'.format(self.monat))
 
     def incrementmonths(self, incmonths):
         timetonextyear = 12 - self.monat
         while incmonths >= 12:
             self.incrementyears(1)
             incmonths -= 12
-        if incmonths >= timetonextyear:
+        if incmonths > timetonextyear:
             self.incrementyears(1)
             self.monat = incmonths - timetonextyear
         else:
             self.monat += incmonths
-        print('Aktueller Monat: {}'.format(self.monat))
 
     def incrementyears(self, incyears):
         self.jahr += incyears
-        print('Aktuelles Jahr: {}'.format(self.jahr))
+
+    def incrementcombatrounds(self, rounds):
+        self.incrementseconds(6 * rounds)
+
+    def telltime(self, output_channel=None):
+        oldprint = sys.stdout
+        if output_channel is not None:
+            sys.stdout = output_channel
+        print('{:02d}. {} {} - {:02d}:{:02d}:{:02d}'.format(self.monatstag, self.monatsref[self.monat - 1], self.jahr, \
+                                            self.stunde, self.minute, self.sekunde))
+        if output_channel is not None:
+            sys.stdout = oldprint
 
 
 time = fantasyTime()
-time.incrementseconds(120)
-time.incrementmonths(4)
+time.incrementseconds(119)
+time.incrementmonths(1)
+time.incrementcombatrounds(6)
+time.telltime()
