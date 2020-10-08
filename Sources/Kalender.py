@@ -39,7 +39,7 @@ class fantasyTime:
         if not os.path.exists(self.configpath):
             os.makedirs(self.configpath)
         with codecs.open(self.configpath + 'Kalenderconfig', 'w+') as self.configfile:
-            print('Datei geöffnet: ', self.configfile)
+            print('Datei geöffnet: {}'.format(str(self.configpath + 'Kalenderconfig')))
         print('Kalender initialisiert')
 
     def incrementseconds(self, incsec):
@@ -133,9 +133,40 @@ class fantasyTime:
         if output_channel is not None:
             sys.stdout = oldprint
 
+    def loadtime(self):
+        with codecs.open(self.configpath + 'Kalenderconfig', 'r', encoding='utf8') as file:
+            if os.path.getsize(self.configpath + 'Kalenderconfig') > 0:
+                line = file.readline()
+                datachunks = line.split(' - ')
+                datum = datachunks[0].split(' ')
+                zeit = datachunks[1].split(':')
+                monthday = datum[0].split('.')
+                print('Folgende Zeit geladen: ')
+                print('Datum: {} {} {}'.format(datum[0], datum[1], datum[2]))
+                print('Zeit: {}:{}:{}'.format(zeit[0], zeit[1], zeit[2]))
+                self.monatstag = int(monthday[0])
+                self.monat = self.monatsref.index(datum[1])
+                print(self.monat)
+                self.jahr = int(datum[2])
+                self.stunde = int(zeit[0])
+                self.minute = int(zeit[1])
+                self.sekunde = int(zeit[2])
+            else:
+                print('Datei ist noch leer. Fahre mit den Standardeinstellungen fort:')
+                self.telltime()
+
+    def savetime(self):
+        with codecs.open(self.configpath + 'Kalenderconfig', 'w', encoding='utf8') as file:
+            self.telltime(output_channel=file)
+            print('Folgende Zeit gespeichert: ')
+            self.telltime()
+
 
 time = fantasyTime()
 time.incrementseconds(119)
-time.incrementmonths(1)
+time.incrementmonths(3)
+time.incrementhours(9)
+time.incrementminutes(59)
 time.incrementcombatrounds(6)
-time.telltime()
+time.savetime()
+time.loadtime()
