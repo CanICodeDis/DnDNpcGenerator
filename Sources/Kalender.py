@@ -28,7 +28,7 @@ class fantasyTime:
         self.monatsref = ('Gretstige', 'Mochtrath', 'Lyn', 'Ejnhar', 'Faarensted', 'Wassers Weg', \
                           'Kronmars Atem', 'Lindes Lohn', 'Sinvirs Flucht', 'Labanthers Mantel', 'Feuerschein', \
                           'Frosthöh')
-        self.monat = 11
+        self.monat = 0
         self.jahr = 500
         self.configpath = str(Path.home())
         opsys = platform.system()
@@ -38,8 +38,11 @@ class fantasyTime:
             self.configpath += '\\DnD\\Kampagne\\WegNachVorn\\Kalender\\'
         if not os.path.exists(self.configpath):
             os.makedirs(self.configpath)
-        with codecs.open(self.configpath + 'Kalenderconfig', 'w+') as self.configfile:
-            print('Datei geöffnet: {}'.format(str(self.configpath + 'Kalenderconfig')))
+        if os.path.exists(self.configpath + 'Kalenderconfig'):
+            print('Konfigurationsdatei gefunden')
+        else:
+            with codecs.open(self.configpath + 'Kalenderconfig', 'w+') as self.configfile:
+                print('Datei erstell: {}'.format(str(self.configpath + 'Kalenderconfig')))
         print('Kalender initialisiert')
 
     def incrementseconds(self, incsec):
@@ -128,25 +131,24 @@ class fantasyTime:
         oldprint = sys.stdout
         if output_channel is not None:
             sys.stdout = output_channel
-        print('{:02d}. {} {} - {:02d}:{:02d}:{:02d}'.format(self.monatstag, self.monatsref[self.monat - 1], self.jahr, \
+        print('{:02d}_{}_{} - {:02d}:{:02d}:{:02d}'.format(self.monatstag, self.monatsref[self.monat - 1], self.jahr, \
                                                             self.stunde, self.minute, self.sekunde))
         if output_channel is not None:
             sys.stdout = oldprint
 
     def loadtime(self):
         with codecs.open(self.configpath + 'Kalenderconfig', 'r', encoding='utf8') as file:
-            if os.path.getsize(self.configpath + 'Kalenderconfig') > 0:
+            len = os.path.getsize(self.configpath + 'Kalenderconfig')
+            if len > 0:
                 line = file.readline()
                 datachunks = line.split(' - ')
-                datum = datachunks[0].split(' ')
+                datum = datachunks[0].split('_')
                 zeit = datachunks[1].split(':')
-                monthday = datum[0].split('.')
                 print('Folgende Zeit geladen: ')
                 print('Datum: {} {} {}'.format(datum[0], datum[1], datum[2]))
                 print('Zeit: {}:{}:{}'.format(zeit[0], zeit[1], zeit[2]))
-                self.monatstag = int(monthday[0])
+                self.monatstag = int(datum[0])
                 self.monat = self.monatsref.index(datum[1])
-                print(self.monat)
                 self.jahr = int(datum[2])
                 self.stunde = int(zeit[0])
                 self.minute = int(zeit[1])
@@ -163,6 +165,7 @@ class fantasyTime:
 
 
 time = fantasyTime()
+time.loadtime()
 time.incrementseconds(119)
 time.incrementmonths(3)
 time.incrementhours(9)
