@@ -6,11 +6,15 @@ from toolbox import generate_scores
 from toolbox import pathbuilder
 import platform
 import png
+from class_cli import CLI
 import os
 from pathlib import Path
 from inventory import inventar
 
+cli = CLI()
 
+
+@cli.Program()
 class NPC:
     name = None
     geburtstag = None
@@ -54,61 +58,78 @@ class NPC:
         self.wismod = floor((self.wis - 10.0) / 2.0)
         self.chamod = floor((self.cha - 10.0) / 2.0)
 
+    @cli.Operation()
     def get_strmod(self):
         return self.strmod
 
+    @cli.Operation()
     def get_dexmod(self):
         return self.dexmod
 
+    @cli.Operation()
     def get_conmod(self):
         return self.conmod
 
+    @cli.Operation()
     def get_intmod(self):
         return self.intmod
 
+    @cli.Operation()
     def get_wismod(self):
         return self.wismod
 
+    @cli.Operation()
     def get_chamod(self):
         return self.chamod
 
+    @cli.Setting()
     def set_str(self, attr):
         self.str = int(attr)
         self.calculate_modifiers()
 
+    @cli.Operation()
     def set_dex(self, attr):
         self.dex = int(attr)
         self.calculate_modifiers()
 
+    @cli.Operation()
     def set_con(self, attr):
         self.con = int(attr)
         self.calculate_modifiers()
 
+    @cli.Operation()
     def set_int(self, attr):
         self.int = int(attr)
         self.calculate_modifiers()
 
+    @cli.Operation()
     def set_wis(self, attr):
         self.wis = int(attr)
         self.calculate_modifiers()
 
+    @cli.Operation()
     def set_cha(self, attr):
         self.cha = int(attr)
         self.calculate_modifiers()
 
+    @cli.Operation()
     def get_name(self):
         return self.name
 
+    @cli.Operation()
     def set_name(self, name):
         self.name = str(name)
 
+    @cli.Operation()
     def set_stufe(self, stufe):
         self.stufe = int(stufe)
         self.proficency = int(ceil(1.0 + 0.25 * self.stufe))
 
+    @cli.Operation()
     def getstufe(self):
         return int(self.stufe)
 
+    @cli.Operation()
     def get_portrait(self):
         return self.portrait
 
@@ -123,6 +144,10 @@ class NPC:
             pa = pa + str(self.volk) + '\\' + str(self.klasse) + '\\' + str(self.geschlecht) + '\\\'' + str(self.name) + '\\\''
         if not os.path.exists(pa):
             os.makedirs(pa)
+            if ops == 'Linux' or ops == 'Darwin':
+                os.makedirs(pa + 'Inventar/')
+            else:
+                os.makedirs(pa + 'Inventar\\')
         self.savepath = pa
 
     def score_distributor(self):
@@ -229,6 +254,7 @@ class NPC:
                 self.int = 10
             self.calculate_modifiers()
 
+    @cli.Operation()
     def print_info(self):
         if self.name is not None:
             print('Name: ', self.name)
@@ -251,7 +277,51 @@ class NPC:
         print('Proficency Bonus: {}'.format(str(self.proficency)))
         self.inv.printinventory()
 
-    def __init__(self):
+    def specify(self, geschl=None, klasse=None, volk=None, name=None):
+        if geschl == 'm':
+            self.geschlecht = 'männlich'
+        elif geschl == 'w':
+            self.geschlecht = 'weiblich'
+        else:
+            seed(None)
+            rando = randint(1, 2)
+            if rando == 1:
+                self.geschlecht = 'weiblich'
+            else:
+                self.geschlecht = 'männlich'
+        pa = str(Path.home())
+        opsys = platform.system()
+        if opsys == 'Linux' or opsys == 'Darwin':
+            pa += '/DnD/Listen'
+        else:
+            pa += '\\DnD\\Listen'
+        if klasse is None:
+            if opsys == 'Linux' or opsys == 'Darwin':
+                klasspath = pa + '/Berufe'
+            else:
+                klasspath = pa + '\\Berufe'
+            self.klasse = read_random_object(klasspath)
+        else:
+            self.klasse = klasse
+        self.score_distributor()
+        if volk is None:
+            if opsys == 'Linux' or opsys == 'Darwin':
+                volkpath = pa + '/Volk'
+            else:
+                volkpath = pa + '\\Volk'
+            self.volk = read_random_object(volkpath)
+        else:
+            self.volk = volk
+        if name is None:
+            self.name = read_random_object(pathbuilder(self.geschlecht, self.volk))
+        else:
+            self.name = name
+        self.directorybuilder()
+
+    def savechar(self):
+        print('Name: {}'.format(self.name))
+
+    def random_char(self):
         seed(None)
         randomnum = randint(1, 2)
         if randomnum == 1:
@@ -259,21 +329,32 @@ class NPC:
         else:
             self.geschlecht = 'männlich'
         opsys = platform.system()
+        pa = str(Path.home())
         if opsys == 'Linux' or opsys == 'Darwin':
-            self.persohnlichkeit = read_random_object('../Listen/CharEigenschaften')
-            self.volk = read_random_object('../Listen/Volk')
-            self.klasse = read_random_object('../Listen/Berufe')
+            pa += '/DnD/Listen'
+            self.persohnlichkeit = read_random_object(pa + '/CharEigenschaften')
+            self.volk = read_random_object(pa + '/Volk')
+            self.klasse = read_random_object(pa + '/Berufe')
         else:
-            self.persohnlichkeit = read_random_object('..\\Listen\\CharEigenschaften')
-            self.volk = read_random_object('..\\Listen\\Volk')
-            self.klasse = read_random_object('..\\Listen\\Berufe')
+            pa += '\\DnD\\Listen'
+            self.persohnlichkeit = read_random_object(pa + '\\CharEigenschaften')
+            self.volk = read_random_object(pa + '\\Volk')
+            self.klasse = read_random_object(pa + '\\Berufe')
         self.score_distributor()
         self.name = read_random_object(pathbuilder(self.geschlecht, self.volk))
         self.proficency = int(ceil(1.0 + 0.25 * self.stufe))
+        self.directorybuilder()
+
+    def __init__(self):
+        print('Neuer Charakter geboren')
         self.inv = inventar()
 
 
 x = NPC()
+x.specify('m', klasse='Barbar')
 x.set_stufe(15)
-x.print_info()
 x.directorybuilder()
+x.inv.hinzufuegen('Tekanne', 2, '10cp', 0.1, 'Eine schmucklose Teekanne aus Messing. Die Verarbeitung wirkt jedoch wertig.')
+x.print_info()
+# if __name__ == "__main__":
+#     NPC().CLI.main()

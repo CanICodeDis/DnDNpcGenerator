@@ -2,6 +2,7 @@ import codecs
 from random import seed
 from random import randint
 import platform
+from pathlib import Path
 
 
 def file_len(fname):
@@ -22,7 +23,7 @@ def read_random_object(fname):
     with codecs.open(fname, 'r', 'utf-8') as file:
         for i, l in enumerate(file):
             pass
-        randomnum = randint(0, i+1)
+        randomnum = randint(0, i)
         file.seek(0)
         content = file.readlines()
         os = platform.system()
@@ -43,12 +44,13 @@ def generate_scores():
 
 def pathbuilder(gesch, volk):
     os = platform.system()
+    pa = str(Path.home())
     if os == 'Linux' or os == 'Darwin':
-        path = '../Listen/Namen/'
+        path = pa + '/DnD/Listen/Namen/'
         path = path + str(gesch) + '/' + str(volk)
         # print(path)
     else:
-        path = '..\\Listen\\Namen\\'
+        path = pa + '\\DnD\\Listen\\Namen\\'
         path = path + str(gesch) + '\\' + str(volk)
         # print(path)
     return path

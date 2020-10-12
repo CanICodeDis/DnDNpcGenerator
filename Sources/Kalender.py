@@ -132,14 +132,14 @@ class fantasyTime:
         if output_channel is not None:
             sys.stdout = output_channel
         print('{:02d}_{}_{} - {:02d}:{:02d}:{:02d}'.format(self.monatstag, self.monatsref[self.monat - 1], self.jahr, \
-                                                            self.stunde, self.minute, self.sekunde))
+                                                           self.stunde, self.minute, self.sekunde))
         if output_channel is not None:
             sys.stdout = oldprint
 
     def loadtime(self):
         with codecs.open(self.configpath + 'Kalenderconfig', 'r', encoding='utf8') as file:
-            len = os.path.getsize(self.configpath + 'Kalenderconfig')
-            if len > 0:
+            leng = os.path.getsize(self.configpath + 'Kalenderconfig')
+            if leng > 0:
                 line = file.readline()
                 datachunks = line.split(' - ')
                 datum = datachunks[0].split('_')
@@ -169,7 +169,8 @@ time.loadtime()
 time.incrementseconds(119)
 time.incrementmonths(3)
 time.incrementhours(9)
+time.incrementdays(5)
 time.incrementminutes(59)
-time.incrementcombatrounds(6)
+time.incrementcombatrounds(7)
 time.savetime()
 time.loadtime()
