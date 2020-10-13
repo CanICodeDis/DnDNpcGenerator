@@ -10,6 +10,8 @@ from class_cli import CLI
 import os
 from pathlib import Path
 from inventory import inventar
+import sys
+import codecs
 
 cli = CLI()
 
@@ -24,6 +26,7 @@ class NPC:
     persohnlichkeit = None
     portrait = None
     savepath = None
+    invpa = None
     inv = None
 
     str = 0
@@ -145,10 +148,13 @@ class NPC:
         if not os.path.exists(pa):
             os.makedirs(pa)
             if ops == 'Linux' or ops == 'Darwin':
-                os.makedirs(pa + 'Inventar/')
+                self.invpa = pa + 'Inventar/'
+                os.makedirs(self.invpa)
             else:
-                os.makedirs(pa + 'Inventar\\')
+                self.invpa = pa + 'Inventar\\'
+                os.makedirs(self.invpa)
         self.savepath = pa
+        self.inv.set_savepath(self.invpa)
 
     def score_distributor(self):
         if self.klasse is None:
@@ -255,18 +261,22 @@ class NPC:
             self.calculate_modifiers()
 
     @cli.Operation()
-    def print_info(self):
+    def print_info(self, outputchannel=None):
+        oldout = None
+        if outputchannel is not None:
+            oldout = sys.stdout
+            sys.stdout = outputchannel
         if self.name is not None:
-            print('Name: ', self.name)
+            print('Name:', self.name)
         if self.volk is not None:
-            print('Volk: ', self.volk)
+            print('Volk:', self.volk)
         if self.geschlecht is not None:
-            print('Geschlecht: ', self.geschlecht)
+            print('Geschlecht:', self.geschlecht)
         if self.persohnlichkeit is not None:
-            print('Persöhnlichkeit: ', self.persohnlichkeit)
+            print('Persöhnlichkeit:', self.persohnlichkeit)
         if self.geburtstag is not None:
-            print('Geburtstag: ', self.geburtstag)
-        print('Klasse: ', self.klasse)
+            print('Geburtstag:', self.geburtstag)
+        print('Klasse:', self.klasse)
         print('Str: {} ({})'.format(str(self.str), str(self.strmod)))
         print('Dex: {} ({})'.format(str(self.dex), str(self.dexmod)))
         print('Con: {} ({})'.format(str(self.con), str(self.conmod)))
@@ -275,9 +285,18 @@ class NPC:
         print('Cha: {} ({})'.format(str(self.cha), str(self.chamod)))
         print('Stufe: {}'.format(str(self.stufe)))
         print('Proficency Bonus: {}'.format(str(self.proficency)))
-        self.inv.printinventory()
+        if outputchannel is not None:
+            sys.stdout = oldout
 
-    def specify(self, geschl=None, klasse=None, volk=None, name=None):
+    def savecharacter(self):
+        with codecs.open(self.savepath + 'CharInfo', 'w',encoding='utf8') as file:
+            self.print_info(outputchannel=file)
+
+    def updateinventory(self):
+        with codecs.open(self.invpa + 'InvInfo', 'w', encoding='utf8') as invfile:
+            self.inv.printinventory(outputchannel=invfile)
+
+    def specify(self, geschl=None, klasse=None, volk=None, name=None, persoenlichkeit=None):
         if geschl == 'm':
             self.geschlecht = 'männlich'
         elif geschl == 'w':
@@ -316,10 +335,15 @@ class NPC:
             self.name = read_random_object(pathbuilder(self.geschlecht, self.volk))
         else:
             self.name = name
+        if persoenlichkeit is None:
+            if opsys == 'Linux' or opsys == 'Darwin':
+                perspath = pa + '/CharEigenschaften'
+            else:
+                perspath = pa + '\\CharEigenschaften'
+            self.persohnlichkeit = read_random_object(perspath)
+        else:
+            self.persohnlichkeit = persoenlichkeit
         self.directorybuilder()
-
-    def savechar(self):
-        print('Name: {}'.format(self.name))
 
     def random_char(self):
         seed(None)
@@ -351,10 +375,12 @@ class NPC:
 
 
 x = NPC()
-x.specify('m', klasse='Barbar')
+x.specify(klasse='Barbar')
 x.set_stufe(15)
 x.directorybuilder()
 x.inv.hinzufuegen('Tekanne', 2, '10cp', 0.1, 'Eine schmucklose Teekanne aus Messing. Die Verarbeitung wirkt jedoch wertig.')
 x.print_info()
+x.savecharacter()
+x.updateinventory()
 # if __name__ == "__main__":
 #     NPC().CLI.main()

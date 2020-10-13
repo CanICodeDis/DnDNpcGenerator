@@ -1,4 +1,5 @@
 from gegenstand import Item
+import sys
 
 
 class inventar:
@@ -6,11 +7,16 @@ class inventar:
     Gegenstaende = []
     gesamtgewicht = 0.0
     gesamtzahl = 0
+    savepa = None
 
     def __init__(self):
         self.Gegenstaende = []
         self.gesamtgewicht = 0.0
         self.gesamtzahl = 0
+        self.savepa = ''
+
+    def set_savepath(self, svpth):
+        self.savepa = svpth
 
     def hinzufuegen(self, aname, anzahl, wert=None, weight=None, description=None):
         alreadyexists = 0
@@ -45,11 +51,17 @@ class inventar:
                     self.gesamtgewicht -= cnt * item.get_gewicht()
                     self.Gegenstaende.remove(item)
 
-    def printinventory(self):
+    def printinventory(self, outputchannel=None):
+        outp = None
+        if outputchannel is not None:
+            outp = sys.stdout
+            sys.stdout = outputchannel
         for item in self.Gegenstaende:
             item.print_item()
         print('Gesamtgewicht: {:.1f}'.format(self.gesamtgewicht))
         print('Anzahl aller Gegenstände: ', str(self.gesamtzahl))
+        if outputchannel is not None:
+            sys.stdout = outp
 
 
 # Inv = inventar()
