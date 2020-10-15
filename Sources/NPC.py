@@ -5,7 +5,7 @@ from toolbox import read_random_object
 from toolbox import generate_scores
 from toolbox import pathbuilder
 import platform
-import png
+#import png
 from class_cli import CLI
 import os
 from pathlib import Path
