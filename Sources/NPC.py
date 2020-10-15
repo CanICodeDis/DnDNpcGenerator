@@ -288,10 +288,12 @@ class NPC:
         if outputchannel is not None:
             sys.stdout = oldout
 
+    @cli.Operation()
     def savecharacter(self):
         with codecs.open(self.savepath + 'CharInfo', 'w',encoding='utf8') as file:
             self.print_info(outputchannel=file)
 
+    @cli.Operation()
     def updateinventory(self):
         with codecs.open(self.invpa + 'InvInfo', 'w', encoding='utf8') as invfile:
             self.inv.printinventory(outputchannel=invfile)
@@ -345,6 +347,7 @@ class NPC:
             self.persohnlichkeit = persoenlichkeit
         self.directorybuilder()
 
+    @cli.Operation()
     def random_char(self):
         seed(None)
         randomnum = randint(1, 2)

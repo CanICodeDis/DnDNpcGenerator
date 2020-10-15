@@ -23,7 +23,7 @@ def read_random_object(fname):
     with codecs.open(fname, 'r', 'utf-8') as file:
         for i, l in enumerate(file):
             pass
-        randomnum = randint(0, i)
+        randomnum = randint(1, i + 1)
         file.seek(0)
         content = file.readlines()
         os = platform.system()
