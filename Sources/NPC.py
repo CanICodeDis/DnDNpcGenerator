@@ -374,13 +374,13 @@ class NPC:
         self.inv = inventar()
 
 
-x = NPC()
-x.specify(klasse='Barbar')
-x.set_stufe(15)
-x.directorybuilder()
-x.inv.hinzufuegen('Tekanne', 2, '10cp', 0.1, 'Eine schmucklose Teekanne aus Messing. Die Verarbeitung wirkt jedoch wertig.')
-x.print_info()
-x.savecharacter()
-x.updateinventory()
-# if __name__ == "__main__":
-#     NPC().CLI.main()
+# x = NPC()
+# x.specify(klasse='Barbar')
+# x.set_stufe(15)
+# x.directorybuilder()
+# x.inv.hinzufuegen('Tekanne', 2, '10cp', 0.1, 'Eine schmucklose Teekanne aus Messing. Die Verarbeitung wirkt jedoch wertig.')
+# x.print_info()
+# x.savecharacter()
+# x.updateinventory()
+if __name__ == "__main__":
+    NPC().CLI.main()
