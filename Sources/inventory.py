@@ -18,6 +18,9 @@ class inventar:
     def set_savepath(self, svpth):
         self.savepa = svpth
 
+    def get_savepath(self):
+        return self.savepa
+
     def hinzufuegen(self, aname, anzahl, wert=None, weight=None, description=None):
         alreadyexists = 0
         for item in self.Gegenstaende:

@@ -85,35 +85,41 @@ class NPC:
     def get_chamod(self):
         return self.chamod
 
-    @cli.Setting()
+    @cli.Operation()
     def set_str(self, attr):
         self.str = int(attr)
         self.calculate_modifiers()
+        self.save_character()
 
     @cli.Operation()
     def set_dex(self, attr):
         self.dex = int(attr)
         self.calculate_modifiers()
+        self.save_character()
 
     @cli.Operation()
     def set_con(self, attr):
         self.con = int(attr)
         self.calculate_modifiers()
+        self.save_character()
 
     @cli.Operation()
     def set_int(self, attr):
         self.int = int(attr)
         self.calculate_modifiers()
+        self.save_character()
 
     @cli.Operation()
     def set_wis(self, attr):
         self.wis = int(attr)
         self.calculate_modifiers()
+        self.save_character()
 
     @cli.Operation()
     def set_cha(self, attr):
         self.cha = int(attr)
         self.calculate_modifiers()
+        self.save_character()
 
     @cli.Operation()
     def get_name(self):
@@ -122,12 +128,14 @@ class NPC:
     @cli.Operation()
     def set_name(self, name):
         self.name = str(name)
+        self.save_character()
 
     @cli.Operation()
     def set_stufe(self, stufe):
         self.stufe = int(stufe)
         self.proficency = int(ceil(1.0 + 0.25 * self.stufe))
-
+        self.save_character()
+        
     @cli.Operation()
     def getstufe(self):
         return int(self.stufe)
@@ -153,8 +161,8 @@ class NPC:
             else:
                 self.invpa = pa + 'Inventar\\'
                 os.makedirs(self.invpa)
-        self.savepath = pa
-        self.inv.set_savepath(self.invpa)
+        self.savepath = pa + 'CharInfo'
+        self.inv.set_savepath(self.invpa + 'InvInfo')
 
     def score_distributor(self):
         if self.klasse is None:
@@ -289,12 +297,12 @@ class NPC:
             sys.stdout = oldout
 
     @cli.Operation()
-    def savecharacter(self):
+    def save_character(self):
         with codecs.open(self.savepath + 'CharInfo', 'w',encoding='utf8') as file:
             self.print_info(outputchannel=file)
 
     @cli.Operation()
-    def updateinventory(self):
+    def update_inventory(self):
         with codecs.open(self.invpa + 'InvInfo', 'w', encoding='utf8') as invfile:
             self.inv.printinventory(outputchannel=invfile)
 
@@ -373,7 +381,6 @@ class NPC:
         self.directorybuilder()
 
     def __init__(self):
-        print('Neuer Charakter geboren')
         self.inv = inventar()
 
 
