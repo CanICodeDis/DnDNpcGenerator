@@ -17,6 +17,7 @@ class fantasyTime:
     jahr = None
     configpath = None
     configfile = None
+    worldtime = None
 
     def __init__(self):
         self.monatstag = 1
@@ -30,6 +31,7 @@ class fantasyTime:
                           'Frosthöh')
         self.monat = 0
         self.jahr = 500
+        self.worldtime = 0
         self.configpath = str(Path.home())
         opsys = platform.system()
         if opsys == 'Linux' or opsys == 'Darwin':
@@ -61,6 +63,7 @@ class fantasyTime:
             self.sekunde = incsec - timetonextmin
         else:
             self.sekunde += incsec
+        self.worldtime += incsec
 
     def incrementminutes(self, incmin):
         timetonexthour = 60 - self.minute
@@ -78,6 +81,7 @@ class fantasyTime:
             self.minute = incmin - timetonexthour
         else:
             self.minute += incmin
+        self.worldtime += 60 * incmin
 
     def incrementhours(self, inchours):
         timetonextday = 24 - self.stunde
@@ -95,6 +99,7 @@ class fantasyTime:
             self.stunde = inchours - timetonextday
         else:
             self.stunde += inchours
+        self.worldtime += 3600 * inchours
 
     def incrementdays(self, incdays):
         timetonextmonth = 31 - self.monatstag
@@ -109,6 +114,7 @@ class fantasyTime:
             self.monatstag = incdays - timetonextmonth
         else:
             self.monatstag += incdays
+        self.worldtime += 86400 * incdays
 
     def incrementmonths(self, incmonths):
         timetonextyear = 12 - self.monat
@@ -120,9 +126,11 @@ class fantasyTime:
             self.monat = incmonths - timetonextyear
         else:
             self.monat += incmonths
+        self.worldtime += 2678400 * incmonths
 
     def incrementyears(self, incyears):
         self.jahr += incyears
+        self.worldtime += 32140800 * incyears
 
     def incrementcombatrounds(self, rounds):
         self.incrementseconds(6 * rounds)
@@ -131,8 +139,8 @@ class fantasyTime:
         oldprint = sys.stdout
         if output_channel is not None:
             sys.stdout = output_channel
-        print('{:02d}_{}_{} - {:02d}:{:02d}:{:02d}'.format(self.monatstag, self.monatsref[self.monat - 1], self.jahr, \
-                                                           self.stunde, self.minute, self.sekunde))
+        print('{:02d}_{}_{} - {:02d}:{:02d}:{:02d} - {}'.format(self.monatstag, self.monatsref[self.monat - 1], self.jahr, \
+                                                           self.stunde, self.minute, self.sekunde, self.worldtime))
         if output_channel is not None:
             sys.stdout = oldprint
 
@@ -144,9 +152,11 @@ class fantasyTime:
                 datachunks = line.split(' - ')
                 datum = datachunks[0].split('_')
                 zeit = datachunks[1].split(':')
+                self.worldtime = int(datachunks[2])
                 print('Folgende Zeit geladen: ')
                 print('Datum: {} {} {}'.format(datum[0], datum[1], datum[2]))
                 print('Zeit: {}:{}:{}'.format(zeit[0], zeit[1], zeit[2]))
+                print('Weltzeit in Sekunden: {}'.format(int(self.worldtime)))
                 self.monatstag = int(datum[0])
                 self.monat = self.monatsref.index(datum[1])
                 self.jahr = int(datum[2])
@@ -162,6 +172,9 @@ class fantasyTime:
             self.telltime(output_channel=file)
             print('Folgende Zeit gespeichert: ')
             self.telltime()
+
+    def getworldtime(self):
+        return self.worldtime
 
 
 time = fantasyTime()
