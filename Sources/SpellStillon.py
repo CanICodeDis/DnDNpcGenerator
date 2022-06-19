@@ -66,3 +66,6 @@ class durationtracker:
         else:
             os.remove(self.Savepath)
 
+    def loadzustand(self, rPath):
+        with codecs.open(rPath, 'r', encoding='utf-8') as file:
+            pass
