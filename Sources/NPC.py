@@ -6,17 +6,14 @@ from toolbox import generate_scores
 from toolbox import pathbuilder
 import platform
 #import png
-from class_cli import CLI
 import os
+import time
 from pathlib import Path
 from inventory import inventar
 import sys
 import codecs
 
-cli = CLI()
 
-
-@cli.Program()
 class NPC:
     name = None
     geburtstag = None
@@ -26,7 +23,9 @@ class NPC:
     persohnlichkeit = None
     portrait = None
     savepath = None
-    invpa = None
+    invpa = ''
+    Heimat = ''
+    Nation = ''
     inv = None
 
     str = 0
@@ -61,86 +60,70 @@ class NPC:
         self.wismod = floor((self.wis - 10.0) / 2.0)
         self.chamod = floor((self.cha - 10.0) / 2.0)
 
-    @cli.Operation()
     def get_strmod(self):
         return self.strmod
 
-    @cli.Operation()
     def get_dexmod(self):
         return self.dexmod
 
-    @cli.Operation()
     def get_conmod(self):
         return self.conmod
 
-    @cli.Operation()
     def get_intmod(self):
         return self.intmod
 
-    @cli.Operation()
     def get_wismod(self):
         return self.wismod
 
-    @cli.Operation()
     def get_chamod(self):
         return self.chamod
 
-    @cli.Operation()
     def set_str(self, attr):
         self.str = int(attr)
         self.calculate_modifiers()
         self.save_character()
 
-    @cli.Operation()
     def set_dex(self, attr):
         self.dex = int(attr)
         self.calculate_modifiers()
         self.save_character()
 
-    @cli.Operation()
     def set_con(self, attr):
         self.con = int(attr)
         self.calculate_modifiers()
         self.save_character()
 
-    @cli.Operation()
     def set_int(self, attr):
         self.int = int(attr)
         self.calculate_modifiers()
         self.save_character()
 
-    @cli.Operation()
     def set_wis(self, attr):
         self.wis = int(attr)
         self.calculate_modifiers()
         self.save_character()
 
-    @cli.Operation()
     def set_cha(self, attr):
         self.cha = int(attr)
         self.calculate_modifiers()
         self.save_character()
 
-    @cli.Operation()
     def get_name(self):
         return self.name
 
-    @cli.Operation()
     def set_name(self, name):
         self.name = str(name)
+        self.directorybuilder()
         self.save_character()
 
-    @cli.Operation()
     def set_stufe(self, stufe):
         self.stufe = int(stufe)
         self.proficency = int(ceil(1.0 + 0.25 * self.stufe))
         self.save_character()
         
-    @cli.Operation()
     def getstufe(self):
         return int(self.stufe)
 
-    @cli.Operation()
     def get_portrait(self):
         return self.portrait
 
@@ -149,10 +132,10 @@ class NPC:
         pa = str(Path.home())
         if ops == 'Linux' or ops == 'Darwin':
             pa = pa + '/DnD/Kampagne/WegNachVorn/NPCs/'
-            pa = pa + str(self.volk) + '/' + str(self.klasse) + '/' + str(self.geschlecht) + '/\'' + str(self.name) + '\'/'
+            pa = pa + str(self.Nation) + '/' + str(self.Heimat) + '/' + str(self.volk) + '/' + str(self.klasse) + '/' + str(self.geschlecht) + '/\'' + str(self.name) + '\'/'
         else:
             pa = pa + '\\DnD\\Kampagne\\WegNachVorn\\NPCs\\'
-            pa = pa + str(self.volk) + '\\' + str(self.klasse) + '\\' + str(self.geschlecht) + '\\\'' + str(self.name) + '\\\''
+            pa = pa + str(self.Nation) + '\\' + str(self.Heimat) + '\\' + str(self.volk) + '\\' + str(self.klasse) + '\\' + str(self.geschlecht) + '\\\'' + str(self.name) + '\\\''
         if not os.path.exists(pa):
             os.makedirs(pa)
             if ops == 'Linux' or ops == 'Darwin':
@@ -268,7 +251,6 @@ class NPC:
                 self.int = 10
             self.calculate_modifiers()
 
-    @cli.Operation()
     def print_info(self, outputchannel=None):
         oldout = None
         if outputchannel is not None:
@@ -284,6 +266,10 @@ class NPC:
             print('Persöhnlichkeit:', self.persohnlichkeit)
         if self.geburtstag is not None:
             print('Geburtstag:', self.geburtstag)
+        if self.Nation != '':
+            print('Nation: ', self.Nation)
+        if self.Heimat != '':
+            print('Heimatstadt: ', self.Heimat)
         print('Klasse:', self.klasse)
         print('Str: {} ({})'.format(str(self.str), str(self.strmod)))
         print('Dex: {} ({})'.format(str(self.dex), str(self.dexmod)))
@@ -296,17 +282,15 @@ class NPC:
         if outputchannel is not None:
             sys.stdout = oldout
 
-    @cli.Operation()
     def save_character(self):
-        with codecs.open(self.savepath + 'CharInfo', 'w',encoding='utf8') as file:
+        with codecs.open(self.savepath, 'w', encoding='utf8') as file:
             self.print_info(outputchannel=file)
 
-    @cli.Operation()
     def update_inventory(self):
         with codecs.open(self.invpa + 'InvInfo', 'w', encoding='utf8') as invfile:
             self.inv.printinventory(outputchannel=invfile)
 
-    def specify(self, geschl=None, klasse=None, volk=None, name=None, persoenlichkeit=None):
+    def specify(self, geschl=None, klasse=None, volk=None, name=None, persoenlichkeit=None, heimat=None, nation=None):
         if geschl == 'm':
             self.geschlecht = 'männlich'
         elif geschl == 'w':
@@ -353,9 +337,23 @@ class NPC:
             self.persohnlichkeit = read_random_object(perspath)
         else:
             self.persohnlichkeit = persoenlichkeit
+        if nation is None:
+            if opsys == 'Linux' or opsys == 'Darwin':
+                nationpath = pa + '/Nation'
+            else:
+                nationpath = pa + '\\Nation'
+        else:
+            self.Nation = nation
+        if heimat is None:
+            if opsys == 'Linux' or opsys == 'Darwin':
+                heimpath = pa + '/Heimat/' + str(self.Nation)
+            else:
+                heimpath = pa + '\\Heimat\\' + str(self.Nation)
+            self.Heimat = read_random_object(heimpath)
+        else:
+            self.Heimat = heimat
         self.directorybuilder()
 
-    @cli.Operation()
     def random_char(self):
         seed(None)
         randomnum = randint(1, 2)
@@ -370,11 +368,15 @@ class NPC:
             self.persohnlichkeit = read_random_object(pa + '/CharEigenschaften')
             self.volk = read_random_object(pa + '/Volk')
             self.klasse = read_random_object(pa + '/Berufe')
+            self.Nation = read_random_object(pa + '/Nation')
+            self.Heimat = read_random_object(pa + '/Heimat/' + str(self.Nation))
         else:
             pa += '\\DnD\\Listen'
             self.persohnlichkeit = read_random_object(pa + '\\CharEigenschaften')
             self.volk = read_random_object(pa + '\\Volk')
             self.klasse = read_random_object(pa + '\\Berufe')
+            self.Nation = read_random_object(pa + '\\Nation')
+            self.Heimat = read_random_object(pa + '\\Heimat\\' + str(self.Nation))
         self.score_distributor()
         self.name = read_random_object(pathbuilder(self.geschlecht, self.volk))
         self.proficency = int(ceil(1.0 + 0.25 * self.stufe))
@@ -393,4 +395,12 @@ class NPC:
 # x.savecharacter()
 # x.updateinventory()
 if __name__ == "__main__":
-    NPC().CLI.main()
+    for i in range(1):
+        x = NPC()
+        x.specify(volk='Dunkelelf', nation='Dunurmin', heimat='Kordina', klasse='Unfugtreiber')
+        x.inv.hinzufuegen(aname='Ring', anzahl=1, wert='8sp', weight=0.2, description='Ein einfacher silberner Ring')
+        x.update_inventory()
+        x.set_stufe(1)
+
+
+

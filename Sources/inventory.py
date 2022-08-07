@@ -7,7 +7,7 @@ class inventar:
     Gegenstaende = []
     gesamtgewicht = 0.0
     gesamtzahl = 0
-    savepa = None
+    savepa = ''
 
     def __init__(self):
         self.Gegenstaende = []
